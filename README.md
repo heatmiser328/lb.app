@@ -1,2 +1,2 @@
-# oca.app
+# ocs.app
 OCS app using Tabrisjs
