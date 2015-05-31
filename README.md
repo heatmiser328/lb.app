@@ -1,2 +1,2 @@
-# ocs.app
-OCS app using Tabrisjs
+# lb.app
+LB assistant using Tabrisjs
