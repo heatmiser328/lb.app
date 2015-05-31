@@ -1,2 +1,2 @@
-var main = require('./main.js');
+var main = require('./views/main.js');
 main.run();

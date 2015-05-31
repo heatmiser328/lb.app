@@ -1,18 +1,18 @@
 var config = require("./config.js");
 var moment = require("moment");
-var battles = require("./battles.json");
-//var battle = require("./battle.js");
+var Battles = require("../core/battles.js");
+var Battle = require("./battle.js");
 var drawer;
 
 function createSelections() {
-	drawer = tabris.create("Drawer").append(createBattlesList(battles));
+	drawer = tabris.create("Drawer").append(createBattlesList(Battles.all()));
 }
 
-function createBattlesList(battles) {
+function createBattlesList(items) {
 	return tabris.create("CollectionView", {
     	layoutData: {left: 0, right: 0, top: 0, bottom: 0},
 	        itemHeight: 72,
-            items: battles,
+            items: items,
             initializeCell: function(cell) {
             	var imageView = tabris.create("ImageView", {
                 	layoutData: {left: config.PAGE_MARGIN, centerY: 0, width: 32, height: 48},
@@ -79,12 +79,8 @@ function showScenarios(battle) {
 			}
 		}).on("select", function(target, value) {
         	console.log('Selected Scenario ' + value.name);
-        	/*
-        	battle.init(value);
-            battle.show();
-            */
+            Battle.show(value.id);
 	}));
-    
     
     page.open();
     
@@ -94,5 +90,7 @@ module.exports = {
 	init: function() {
     	createSelections();
     },
-    show: function() {}
+    show: function() {
+    	drawer.open();
+    }
 }
