@@ -1,0 +1,8 @@
+{
+  "name": "lb",
+  "description": "La Bataille Assistant",
+  "main": "main.js",
+  "dependencies": {
+    "tabris": "1.0.0"
+  }
+}
