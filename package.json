@@ -1,8 +1,9 @@
 {
   "name": "lb",
   "description": "La Bataille Assistant",
-  "main": "main.js",
+  "main": "app.js",
   "dependencies": {
+    "moment": "^2.10.3",
     "tabris": "1.0.0"
   }
 }
