@@ -1,11 +1,12 @@
 var select = require('./select.js');
+var Battle = require("./battle.js");
 
 module.exports = {
 	run: function() {
     	var page = tabris.create("Page", {
         	title: "La Bataille Assistant",
             image: "images/lb.png",
-			topLevel: true
+            topLevel: true
 		});
         tabris.create("TextView", {
         	text: "Welcome to the La Bataille Assistant!",
@@ -16,5 +17,8 @@ module.exports = {
         
 		select.init();
         page.open();
+        
+        Battle.show(2);
+        
     }
 };

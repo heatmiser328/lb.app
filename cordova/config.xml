@@ -1,10 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.tabrisjs.getting.started" version="1.0.0">
-  <name>HelloWorld</name>
+<widget id="com.ica.lb" version="1.0.0">
+  <name>LBA</name>
   <description>
-   A sample Tabris.js application.
+   Lb Bataille Assistant
   </description>
-  <author email="dev@tabrisjs.com" href="https://tabrisjs.com">
-   Tabris.js Team
+  <author email="jcapuano32@gmail.com" href="https://ica.com">
+   ICA Team
   </author>
+  <icon src="images/lb.png" />
 </widget>
