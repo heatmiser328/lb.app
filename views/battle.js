@@ -19,6 +19,40 @@ function createTab(title, image) {
     return tab;
 }
 
+function createSpinLabel(relative, data, labelformatter, prevhandler, nexthandler) {
+	labelformatter = labelformatter || function(value) {return value;}
+    var composite = tabris.create("Composite", {
+    	layoutData: {left: 0, right: [0,3], top: (relative ? [relative, 0] : 0)},
+    	//background: "white",
+        highlightOnTouch: true
+    });
+	    var prevBtn = tabris.create("Button", {
+	    	layoutData: {left: 0, top: 0},
+	        text: "<"
+		}).on("select", function() {
+        	prevhandler(labelView);
+        }).appendTo(composite);
+	    
+	    var compositeLabelView = tabris.create("Composite", {
+        	layoutData: {left: [prevBtn,2], right: [20,0], centerY: 0},
+	    	//background: "green",
+	        highlightOnTouch: true
+	    });
+		    var labelView = tabris.create("TextView", {
+		    	text: labelformatter(data),
+	    		layoutData: {centerX: 0, centerY: 0},
+			}).appendTo(compositeLabelView);
+		compositeLabelView.appendTo(composite);
+	    
+	    var nextBtn = tabris.create("Button", {
+	    	layoutData: {left: [compositeLabelView,0], top: 0},
+	        text: ">"
+		}).on("select", function() {
+        	nexthandler(labelView);
+        }).appendTo(composite);
+	
+    return composite;
+}
 
 function show(data) {
 	var page = tabris.create("Page", {
@@ -30,6 +64,7 @@ function show(data) {
         highlightOnTouch: true
 	});
     
+    // header
     var imageView = tabris.create("ImageView", {
     	layoutData: {left: config.PAGE_MARGIN, top: config.PAGE_MARGIN},
         image: 'images/' + data.battle.image
@@ -49,9 +84,17 @@ function show(data) {
     });
     // date/time
 	var count = 0;
+    
+    var spinTurn = createSpinLabel(null, data.scenario.start, formatDate, function(labelView) {
+	    	labelView.set("text", "Prev Pressed " + (--count) + " times");
+		}, function(labelView) {
+	    	labelView.set("text", "Next Pressed " + (++count) + " times");
+		}).appendTo(compositeTurn);
+    
+    /*
     var compositeDate = tabris.create("Composite", {
-    	layoutData: {centerX: 0, top: 0},
-    	background: "white",
+    	layoutData: {left: 0, right: [0,3], top: 0},
+    	//background: "white",
         highlightOnTouch: true
     });
 	    var prevDateBtn = tabris.create("Button", {
@@ -61,20 +104,28 @@ function show(data) {
 	    	dateView.set("text", "Pressed " + (--count) + " times");
 		}).appendTo(compositeDate);
 	    
-	    var dateView = tabris.create("TextView", {
-	    	text: formatDate(data.scenario.start),
-	    	layoutData: {left: [prevDateBtn,0], centerY: 0}
-		}).appendTo(compositeDate);
+	    var compositeDateView = tabris.create("Composite", {
+        	layoutData: {left: [prevDateBtn,2], right: [20,0], centerY: 0},
+	    	//background: "green",
+	        highlightOnTouch: true
+	    });
+		    var dateView = tabris.create("TextView", {
+		    	text: formatDate(data.scenario.start),
+	    		layoutData: {centerX: 0, centerY: 0},
+			}).appendTo(compositeDateView);
+		compositeDateView.appendTo(compositeDate);
 	    
 	    var nextDateBtn = tabris.create("Button", {
-	    	layoutData: {left: [dateView,0], top: 0},
+	    	layoutData: {left: [compositeDateView,0], top: 0},
 	        text: ">"
 		}).on("select", function() {
 	    	dateView.set("text", "Pressed " + (++count) + " times");
 		}).appendTo(compositeDate);
     compositeDate.appendTo(compositeTurn);
+    */
     
     // phase
+    /*
     var compositePhase = tabris.create("Composite", {
     	layoutData: {centerX: 0, top: [compositeDate, 0]},
     	background: "white",
@@ -99,11 +150,18 @@ function show(data) {
 	    	dateView.set("text", "Pressed " + (++count) + " times");
 		}).appendTo(compositePhase);
     compositePhase.appendTo(compositeTurn);
+    */
+    createSpinLabel(spinTurn, 'Command', undefined, function(labelView) {
+	    	labelView.set("text", "Prev Pressed " + (--count) + " times");
+		}, function(labelView) {
+	    	labelView.set("text", "Prev Pressed " + (++count) + " times");
+		}).appendTo(compositeTurn);
     
     compositeTurn.appendTo(composite);
     
     composite.appendTo(page);
     
+    // tabs
     var folder = tabris.create("TabFolder", {
 		layoutData: {left: 0, top: [composite, 10], right: 0, bottom: 0},
 	    paging: true // enables swiping. To still be able to open the developer console in iOS, swipe from the bottom right.
