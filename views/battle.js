@@ -1,11 +1,7 @@
-var battles = require('../core/battles.js');
+var Battles = require('../core/battles.js');
+var Phases = require('../core/phases.js');
+var Current = require('../core/current.js');
 var config = require('../views/config.js');
-var moment = require("moment");
-
-function formatDate(dt) {
-	var d = moment({year: dt.year, month: dt.month, day: dt.day, hour: dt.hour, minute: dt.minute});
-    return d.format("MMM DD, YYYY HH:mm A");
-}
 
 function createTab(title, image) {
 	var tab = tabris.create("Tab", {
@@ -19,8 +15,7 @@ function createTab(title, image) {
     return tab;
 }
 
-function createSpinLabel(relative, data, labelformatter, prevhandler, nexthandler) {
-	labelformatter = labelformatter || function(value) {return value;}
+function createSpinLabel(relative, text, handler) {
     var composite = tabris.create("Composite", {
     	layoutData: {left: 0, right: [0,3], top: (relative ? [relative, 0] : 0)},
     	//background: "white",
@@ -30,7 +25,7 @@ function createSpinLabel(relative, data, labelformatter, prevhandler, nexthandle
 	    	layoutData: {left: 0, top: 0},
 	        text: "<"
 		}).on("select", function() {
-        	prevhandler(labelView);
+        	handler(labelView, -1);
         }).appendTo(composite);
 	    
 	    var compositeLabelView = tabris.create("Composite", {
@@ -39,7 +34,7 @@ function createSpinLabel(relative, data, labelformatter, prevhandler, nexthandle
 	        highlightOnTouch: true
 	    });
 		    var labelView = tabris.create("TextView", {
-		    	text: labelformatter(data),
+		    	text: text,
 	    		layoutData: {centerX: 0, centerY: 0},
 			}).appendTo(compositeLabelView);
 		compositeLabelView.appendTo(composite);
@@ -48,13 +43,17 @@ function createSpinLabel(relative, data, labelformatter, prevhandler, nexthandle
 	    	layoutData: {left: [compositeLabelView,0], top: 0},
 	        text: ">"
 		}).on("select", function() {
-        	nexthandler(labelView);
+        	handler(labelView, 1);
         }).appendTo(composite);
 	
+    composite.setLabel = function(text) {
+    	labelView.set('text', text);
+    }
+    
     return composite;
 }
 
-function show(data) {
+function show(data, current) {
 	var page = tabris.create("Page", {
     	title: data.battle.name
 	});
@@ -83,80 +82,16 @@ function show(data) {
         highlightOnTouch: true
     });
     // date/time
-	var count = 0;
-    
-    var spinTurn = createSpinLabel(null, data.scenario.start, formatDate, function(labelView) {
-	    	labelView.set("text", "Prev Pressed " + (--count) + " times");
-		}, function(labelView) {
-	    	labelView.set("text", "Next Pressed " + (++count) + " times");
-		}).appendTo(compositeTurn);
-    
-    /*
-    var compositeDate = tabris.create("Composite", {
-    	layoutData: {left: 0, right: [0,3], top: 0},
-    	//background: "white",
-        highlightOnTouch: true
-    });
-	    var prevDateBtn = tabris.create("Button", {
-	    	layoutData: {left: 0, top: 0},
-	        text: "<"
-		}).on("select", function() {
-	    	dateView.set("text", "Pressed " + (--count) + " times");
-		}).appendTo(compositeDate);
-	    
-	    var compositeDateView = tabris.create("Composite", {
-        	layoutData: {left: [prevDateBtn,2], right: [20,0], centerY: 0},
-	    	//background: "green",
-	        highlightOnTouch: true
-	    });
-		    var dateView = tabris.create("TextView", {
-		    	text: formatDate(data.scenario.start),
-	    		layoutData: {centerX: 0, centerY: 0},
-			}).appendTo(compositeDateView);
-		compositeDateView.appendTo(compositeDate);
-	    
-	    var nextDateBtn = tabris.create("Button", {
-	    	layoutData: {left: [compositeDateView,0], top: 0},
-	        text: ">"
-		}).on("select", function() {
-	    	dateView.set("text", "Pressed " + (++count) + " times");
-		}).appendTo(compositeDate);
-    compositeDate.appendTo(compositeTurn);
-    */
-    
+    var spinTurn = createSpinLabel(null, Current.turn(), function(labelView, incr) {
+		var turn = (incr > 0) ? Current.nextTurn() : Current.prevTurn();
+    	labelView.set("text", turn);
+	}).appendTo(compositeTurn);
     // phase
-    /*
-    var compositePhase = tabris.create("Composite", {
-    	layoutData: {centerX: 0, top: [compositeDate, 0]},
-    	background: "white",
-        highlightOnTouch: true
-    });
-	    var prevPhaseBtn = tabris.create("Button", {
-	    	layoutData: {left: 0, top: 0},
-	        text: "<"
-		}).on("select", function() {
-	    	dateView.set("text", "Pressed " + (--count) + " times");
-		}).appendTo(compositePhase);
-	    
-	    var phaseView = tabris.create("TextView", {
-	    	text: 'Command',
-	    	layoutData: {left: [prevPhaseBtn,0], centerY: 0}
-		}).appendTo(compositePhase);
-        
-	    var nextPhaseBtn = tabris.create("Button", {
-	    	layoutData: {left: [phaseView,0], top: 0},
-	        text: ">"
-		}).on("select", function() {
-	    	dateView.set("text", "Pressed " + (++count) + " times");
-		}).appendTo(compositePhase);
-    compositePhase.appendTo(compositeTurn);
-    */
-    createSpinLabel(spinTurn, 'Command', undefined, function(labelView) {
-	    	labelView.set("text", "Prev Pressed " + (--count) + " times");
-		}, function(labelView) {
-	    	labelView.set("text", "Prev Pressed " + (++count) + " times");
-		}).appendTo(compositeTurn);
-    
+    createSpinLabel(spinTurn, Current.phase(), function(labelView, incr) {
+		var phase = (incr > 0) ? Current.nextPhase() : Current.prevPhase();
+    	labelView.set("text", phase);
+        spinTurn.setLabel(Current.turn());
+	}).appendTo(compositeTurn);
     compositeTurn.appendTo(composite);
     
     composite.appendTo(page);
@@ -178,7 +113,8 @@ function show(data) {
 
 module.exports = {
 	show: function(scenarioid) {
-    	var data = battles.findByScenario(scenarioid);
-    	show(data);
+    	var data = Battles.findByScenario(scenarioid);
+        var current = Current.get(data);
+    	show(data, current);
     }
 };

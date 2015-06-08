@@ -32,5 +32,8 @@ cordova/platforms/
 cordova/plugins/
 cordova/www/
 
+#idea
+.idea/
+
 # misc
 *.pst

@@ -1,4 +1,4 @@
-var battles = require("../data/battles.json");
+var battles = require('../data/battles.json');
 var _ = require('lodash');
 
 module.exports = {
