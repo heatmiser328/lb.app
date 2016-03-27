@@ -1,11 +1,11 @@
 {
   "name": "lb",
   "description": "La Bataille Assistant",
-  "main": "app.js",
+  "main": "src/app.js",
   "dependencies": {
     "lodash": "^3.9.3",
     "moment": "^2.10.3",
-    "tabris": "1.0.0"
+    "tabris": "^1.7.0"
   },
   "devDependencies": {
     "chai": "^2.3.0",

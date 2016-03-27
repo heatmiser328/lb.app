@@ -49,26 +49,26 @@ module.exports = {
     	return load();
     },
     phase: function(current) {
-    	current = current || load();
+    	current = current || load();		
         return Phases.get(current.phase);
     },
     prevPhase: function(current) {
     	current = current || load();
         if (--current.phase < 0) {
         	current.phase = Phases.length - 1;
-            prevTurn(current);
+            this.prevTurn(current);
         }
         save(current);
-        return phase(current);
+        return this.phase(current);
     },
     nextPhase: function(current) {
     	current = current || load();
         if (++current.phase >= Phases.length) {
         	current.phase = 0;
-            nextTurn(current);
+            this.nextTurn(current);
         }
         save(current);
-        return phase(current);
+        return this.phase(current);
     },
     turn: function(current) {
     	current = current || load();
@@ -76,9 +76,7 @@ module.exports = {
         var d = moment({year: gamedata.scenario.start.year, month: gamedata.scenario.start.month-1, day: gamedata.scenario.start.day, hour: gamedata.scenario.start.hour, minute: gamedata.scenario.start.minute});
         var o = (current.turn - 1) * TURN_MINS;
         d.add(o, 'minutes');
-        var str = d.format("MMM DD, YYYY HH:mm A");
-		log.debug('turn: ' + str);
-        return str;
+		return d;
     },
     prevTurn: function(current) {
     	var dosave = !current;
@@ -96,9 +94,9 @@ module.exports = {
     	var dosave = !current;
     	current = current || load();
 		log.debug('next turn: ' + current.turn);
-        
+
         var maxturns = maxTurns(current);
-		log.debug('max turns: ' + maxturns);        
+		log.debug('max turns: ' + maxturns);
         if (++current.turn >= maxturns) {
         	current.turn = maxturns;
         }
